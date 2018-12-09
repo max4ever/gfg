@@ -9,6 +9,7 @@ services:
         - .:/application
         - ./phpdocker/mysql/data:/var/lib/mysql
         - ./phpdocker/mysql/gfg_products.sql:/docker-entrypoint-initdb.d/dump.sql
+        - ./phpdocker/mysql/conf.d:/etc/mysql/conf.d/
       environment:
         - MYSQL_ROOT_PASSWORD=root
         - MYSQL_DATABASE=gfg
