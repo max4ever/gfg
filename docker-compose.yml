@@ -1,18 +1,17 @@
-###############################################################################
-#                          Generated on phpdocker.io                          #
-###############################################################################
 version: "3.1"
 services:
 
     mysql:
-      image: mysql:8.0
+      image: mysql:8.0.1
       container_name: gfg-mysql
       working_dir: /application
       volumes:
         - .:/application
+        - ./phpdocker/mysql/data:/var/lib/mysql
+        - ./phpdocker/mysql/gfg_products.sql:/docker-entrypoint-initdb.d/dump.sql
       environment:
         - MYSQL_ROOT_PASSWORD=root
-        - MYSQL_DATABASE=cfg
+        - MYSQL_DATABASE=gfg
         - MYSQL_USER=user
         - MYSQL_PASSWORD=password
       ports:
