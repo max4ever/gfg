@@ -1,0 +1,1 @@
+docker exec -it gfg-php-fpm bash -c "(cd gfg-api && ./vendor/bin/phpunit ./tests/)"

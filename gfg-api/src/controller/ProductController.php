@@ -12,12 +12,22 @@ class ProductController
 
     const HTTP_OK = 200;
 
-    // constructor receives container instance
+    /**
+     * ProductController constructor.
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
+    /**
+     * Responds to get queries on route /products
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
     public function get(Request $request, Response $response, $args)
     {
         $sTitleFilter = $request->getParam('q', null);

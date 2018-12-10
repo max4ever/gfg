@@ -3,6 +3,7 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Gfg\Controller\ProductController;
+use Gfg\Auth\Authorization;
 
 // Routes
 
@@ -14,4 +15,5 @@ $app->get('/', function (Request $request, Response $response, array $args) {
     return $this->renderer->render($response, 'index.phtml', $args);
 });
 
-$app->get('/products', ProductController::class .':get');
+
+$app->get('/products', ProductController::class .':get')->add( new Authorization($app->getContainer()->apiPassword));

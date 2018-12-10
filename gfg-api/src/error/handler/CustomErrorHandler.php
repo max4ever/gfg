@@ -2,11 +2,19 @@
 
 namespace Gfg\Error\Handler;
 
+use Slim\Http\Response;
+
 class CustomErrorHandler
 {
     public const HTTP_UNPROCESSABLE_ENTITY = 422;
 
-    public function __invoke($request, $response, \Exception $exception)
+    /**
+     * @param $request
+     * @param Response $response
+     * @param \Exception $exception
+     * @return Response
+     */
+    public function __invoke($request, Response $response, \Exception $exception)
     {
         $statusCode = $exception->getCode() ?: self::HTTP_UNPROCESSABLE_ENTITY;
 

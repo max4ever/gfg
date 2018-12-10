@@ -23,5 +23,7 @@ return [
             "user" => "root",
             "pass" => "root"
         ],
+
+        'apiPassword' => 'abc', #password to be able to access /products route
     ],
 ];

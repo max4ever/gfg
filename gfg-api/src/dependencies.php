@@ -32,3 +32,7 @@ $container['db'] = function ($c) {
 $container['errorHandler'] = function ($c) {
     return new CustomErrorHandler();
 };
+
+$container['apiPassword'] = function ($c) {
+    return $c->get('settings')['apiPassword'];
+};
