@@ -4,11 +4,10 @@ namespace Gfg\Auth;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Http\StatusCode;
 
 class Authorization
 {
-
-    const HTTP_ERROR_FORBIDDEN = 403;
     private $sPassword;
 
     /**
@@ -30,11 +29,10 @@ class Authorization
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $params = $request->getQueryParams();
-        if (!empty($params['password']) && $params['password'] === $this->sPassword){
+        if (!empty($params['password']) && $params['password'] === $this->sPassword) {
             $response = $next($request, $response);
-        }
-        else{
-            $response = $response->withJson(['error' => 'the password is missing'], self::HTTP_ERROR_FORBIDDEN);
+        } else {
+            $response = $response->withJson(['error' => 'the password is missing'], StatusCode::HTTP_FORBIDDEN);
         }
 
         return $response;

@@ -2,8 +2,7 @@
 
 namespace Tests\Functional;
 
-use Gfg\Auth\Authorization;
-use Gfg\Error\Handler\CustomErrorHandler;
+use Slim\Http\StatusCode;
 
 class ProductsTest extends BaseTestCase
 {
@@ -19,17 +18,16 @@ class ProductsTest extends BaseTestCase
         $this->apiPassword = $settings['settings']['apiPassword'];
     }
 
-
-
     /**
      * Test that the api responds ok
      */
     public function testAllProductsList()
     {
-        $response = $this->runApp('GET', '/products?password='.$this->apiPassword);
+        $response = $this->runApp('GET', '/v1/products?password=' . $this->apiPassword);
 
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(count(json_decode($response->getBody())), 100);//default 100 products in db
+        $this->assertEquals(StatusCode::HTTP_OK, $response->getStatusCode());
+        $result = (array)json_decode($response->getBody())->result;
+        $this->assertEquals(count($result), 100);//default 100 products in db
     }
 
     /**
@@ -37,10 +35,11 @@ class ProductsTest extends BaseTestCase
      */
     public function testFilterByTitle()
     {
-        $response = $this->runApp('GET', '/products?q=.net&password='.$this->apiPassword);
+        $response = $this->runApp('GET', '/v1/products?q=.net&password=' . $this->apiPassword);
 
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(count(json_decode($response->getBody())), 7);
+        $this->assertEquals(StatusCode::HTTP_OK, $response->getStatusCode());
+        $result = (array)json_decode($response->getBody())->result;
+        $this->assertEquals(count($result), 7);
     }
 
     /**
@@ -48,11 +47,13 @@ class ProductsTest extends BaseTestCase
      */
     public function testFilterByTitle2()
     {
-        $response = $this->runApp('GET', '/products?q=tremblay&password='.$this->apiPassword);
+        $response = $this->runApp('GET', '/v1/products?q=tremblay&password=' . $this->apiPassword);
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(StatusCode::HTTP_OK, $response->getStatusCode());
         $sJson = '[{"id":"12","title":"tremblay.com","brand":"dolorem","price":"94953540.00","stock":"4"}]';
-        $this->assertEquals(json_decode($sJson), json_decode($response->getBody()));
+        $result = (array)json_decode($response->getBody())->result;
+
+        $this->assertEquals(json_decode($sJson), $result);
     }
 
     /**
@@ -60,10 +61,11 @@ class ProductsTest extends BaseTestCase
      */
     public function testGetNoResult()
     {
-        $response = $this->runApp('GET', '/products?q=----&password='.$this->apiPassword);
+        $response = $this->runApp('GET', '/v1/products?q=----&password=' . $this->apiPassword);
 
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([], json_decode($response->getBody(), true));
+        $this->assertEquals(StatusCode::HTTP_OK, $response->getStatusCode());
+        $result = (array)json_decode($response->getBody())->result;
+        $this->assertEquals([], $result);
     }
 
     /**
@@ -71,9 +73,9 @@ class ProductsTest extends BaseTestCase
      */
     public function testPostMethodNotAllowed()
     {
-        $response = $this->runApp('POST', '/products?password='.$this->apiPassword, ['test']);
+        $response = $this->runApp('POST', '/v1/products?password=' . $this->apiPassword, ['test']);
 
-        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals(StatusCode::HTTP_METHOD_NOT_ALLOWED, $response->getStatusCode());
         $this->assertContains('Method not allowed', (string)$response->getBody());
     }
 
@@ -82,17 +84,28 @@ class ProductsTest extends BaseTestCase
      */
     public function testErrorEmptyQuery()
     {
-        $response = $this->runApp('GET', '/products?q=&password='.$this->apiPassword);
+        $response = $this->runApp('GET', '/v1/products?q=&password=' . $this->apiPassword);
 
-        $this->assertEquals(CustomErrorHandler::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        $this->assertEquals(StatusCode::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
         $this->assertEquals(['error_msg' => 'query cannot be empty', 'error_type' => 'InvalidArgumentException'], json_decode($response->getBody(), true));
     }
 
-    public function testAuthentication(){
-        $response = $this->runApp('GET', '/products');
+    public function testAuthentication()
+    {
+        $response = $this->runApp('GET', '/v1/products');
 
-        $this->assertEquals(Authorization::HTTP_ERROR_FORBIDDEN, $response->getStatusCode());
+        $this->assertEquals(StatusCode::HTTP_FORBIDDEN, $response->getStatusCode());
         $this->assertEquals(['error' => 'the password is missing'], json_decode($response->getBody(), true));
+    }
+
+    public function testV2Pagination()
+    {
+        $response = $this->runApp('GET', '/v2/products?q=.com&password=abc&filter[]=brand:d&filter[]=price:5&order=+title,-price&limit=2&start=0');
+
+        $this->assertEquals(StatusCode::HTTP_OK, $response->getStatusCode());
+        $result = (array)json_decode($response->getBody())->result;
+
+        $this->assertEquals(count($result), 2);
 
     }
 

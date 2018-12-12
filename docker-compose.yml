@@ -35,6 +35,5 @@ services:
       volumes:
         - .:/application
         - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
-      #workaround to not create another Dockerfile
-      #generate autoload just to be sure works for testers too
-      command: /bin/sh -c "cd /application/gfg-api/ && composer dump-autoload -o && /usr/bin/php-fpm"
+      #TODO maybe move into php Dockerfile
+      command: /bin/sh -c "cd /application/gfg-api/ && composer install && composer dump-autoload -o && /usr/bin/php-fpm"

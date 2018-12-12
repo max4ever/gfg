@@ -2,20 +2,20 @@
 
 namespace Gfg\Controller;
 
-use Gfg\Querybuilder\ApiInterface;
+use Gfg\Helper\DbHelper;
+use Gfg\Querybuilder\ApiInterfaceV1;
 use Gfg\Querybuilder\ApiV1;
 use Psr\Container\ContainerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Http\StatusCode;
 
-class ProductController
+class ProductControllerV1
 {
     protected $container;
 
-    const HTTP_OK = 200;
-
     /**
-     * ProductController constructor.
+     * ProductControllerV1 constructor.
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
@@ -39,29 +39,24 @@ class ProductController
         }
 
         $oQueryBuilder = new ApiV1($this->container->db);
-
         $aQueryParams = $request->getQueryParams();
 
         $this->setFilters($oQueryBuilder, $aQueryParams);
         $this->setSorting($oQueryBuilder, $aQueryParams);
         $qSql = $oQueryBuilder->getResult();
 
-        /* @var $db \PDO */
-        $db = $this->container->db;
-        $sth = $db->prepare($qSql);
-        $sth->execute();
-        $aResult['query'] = $qSql;
-        $aResult['result'] = $sth->fetchAll();
+//        $aResult['query'] = $qSql;
+        $aResult['result'] = DbHelper::getQueryResults($qSql, $this->container->db);
 
-        return $response->withJson($aResult, self::HTTP_OK);
+        return $response->withJson($aResult, StatusCode::HTTP_OK);
     }
 
     /**
      * Sets the filter parameters
-     * @param ApiInterface $oQueryBuilder
+     * @param ApiInterfaceV1 $oQueryBuilder
      * @param $aQueryParams
      */
-    private function setFilters(ApiInterface $oQueryBuilder, $aQueryParams): void
+    protected function setFilters(ApiInterfacev1 $oQueryBuilder, $aQueryParams): void
     {
         if (!empty($aQueryParams['filter'])) {
 
@@ -90,10 +85,10 @@ class ProductController
 
     /**
      * Sets the order of the columns, e.g. 'title,-id' => title ASC, id DESC
-     * @param ApiInterface $oQueryBuilder
+     * @param ApiInterfaceV1 $oQueryBuilder
      * @param $aQueryParams
      */
-    private function setSorting(ApiInterface $oQueryBuilder, $aQueryParams): void
+    protected function setSorting(ApiInterfaceV1 $oQueryBuilder, $aQueryParams): void
     {
         if (!empty($aQueryParams['order'])) {
 

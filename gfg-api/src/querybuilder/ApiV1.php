@@ -2,7 +2,7 @@
 
 namespace Gfg\Querybuilder;
 
-class ApiV1 implements ApiInterface
+class ApiV1 implements ApiInterfaceV1
 {
 
     /**
@@ -16,7 +16,6 @@ class ApiV1 implements ApiInterface
 
     /**
      * ApiV1 constructor.
-     * @param array $aParams
      * @param \PDO $db
      */
     public function __construct(\PDO $db)
@@ -30,15 +29,14 @@ class ApiV1 implements ApiInterface
      */
     public function getResult(): string
     {
-
-
-        return $this->qSql . $this->qSqlWhere . $this->getOrderBy();
+        return $this->qSql . $this->qSqlWhere . $this->getOrderByQueryString();
     }
 
     /**
      * @return string
      */
-    private function getOrderBy(){
+    private function getOrderByQueryString(): string
+    {
         $qOrderBy = '';
         if (!empty($this->aOrderBy)) {
             $qOrderBy = ' ORDER BY ';

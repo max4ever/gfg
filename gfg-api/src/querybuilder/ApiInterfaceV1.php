@@ -2,7 +2,7 @@
 
 namespace Gfg\Querybuilder;
 
-interface ApiInterface
+interface ApiInterfaceV1
 {
     /**
      * Assembles the queries after you set the options
