@@ -15,12 +15,19 @@ class ProductControllerV1
     protected $container;
 
     /**
+     * @var DbHelper
+     */
+    protected $dbHelper;
+
+    /**
      * ProductControllerV1 constructor.
      * @param ContainerInterface $container
+     * @param DbHelper $dbHelper
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, DbHelper $dbHelper)
     {
         $this->container = $container;
+        $this->dbHelper = $dbHelper;
     }
 
     /**
@@ -46,7 +53,7 @@ class ProductControllerV1
         $qSql = $oQueryBuilder->getResult();
 
 //        $aResult['query'] = $qSql;
-        $aResult['result'] = DbHelper::getQueryResults($qSql, $this->container->db);
+        $aResult['result'] = $this->dbHelper->getQueryResults($qSql);
 
         return $response->withJson($aResult, StatusCode::HTTP_OK);
     }

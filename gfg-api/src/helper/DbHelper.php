@@ -4,6 +4,15 @@ namespace Gfg\Helper;
 
 class DbHelper
 {
+    /**
+     * @var \Pdo
+     */
+    private $db;
+
+    public function __construct(\Pdo $db)
+    {
+        $this->db = $db;
+    }
 
     /**
      * Helper function to execute query and return results
@@ -11,9 +20,9 @@ class DbHelper
      * @param \PDO $db
      * @return array
      */
-    public static function getQueryResults(string $qSql, \PDO $db)
+    public function getQueryResults(string $qSql)
     {
-        $sth = $db->prepare($qSql);
+        $sth = $this->db->prepare($qSql);
         $sth->execute();
         return $sth->fetchAll();
     }

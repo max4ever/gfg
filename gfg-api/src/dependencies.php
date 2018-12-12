@@ -1,7 +1,9 @@
 <?php
 // DIC configuration
-use \Slim\Http\Response;
 use Gfg\Error\Handler\CustomErrorHandler;
+use Gfg\Helper\DbHelper;
+use Gfg\Controller\ProductControllerV1;
+use Gfg\Controller\ProductControllerV2;
 
 $container = $app->getContainer();
 
@@ -35,4 +37,18 @@ $container['errorHandler'] = function ($c) {
 
 $container['apiPassword'] = function ($c) {
     return $c->get('settings')['apiPassword'];
+};
+
+$container = $app->getContainer();
+
+//inject dependency into controller constructor
+$container[ProductControllerV1::class] = function ($c) {
+    $dbHelper = new DbHelper($c['db']);
+    return new ProductControllerV1($c, $dbHelper);
+};
+
+//inject dependency into controller constructor
+$container[ProductControllerV2::class] = function ($c) {
+    $dbHelper = new DbHelper($c['db']);
+    return new ProductControllerV2($c, $dbHelper);
 };

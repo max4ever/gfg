@@ -2,7 +2,6 @@
 
 namespace Gfg\Controller;
 
-use Gfg\Helper\DbHelper;
 use Gfg\Querybuilder\ApiInterfaceV2;
 use Gfg\Querybuilder\ApiV2;
 use Slim\Http\Request;
@@ -30,8 +29,8 @@ class ProductControllerV2 extends ProductControllerV1
         $qSql = $oQueryBuilder->getResult();
 
 //        $aResult['query'] = $qSql;
-        $aResult['result'] = DbHelper::getQueryResults($qSql, $this->container->db);
-        $aResult['totalRows'] = DbHelper::getQueryResults("SELECT COUNT(*) as count FROM products", $this->container->db)[0]['count'];
+        $aResult['result'] = $this->dbHelper->getQueryResults($qSql);
+        $aResult['totalRows'] = $this->dbHelper->getQueryResults("SELECT COUNT(*) as count FROM products")[0]['count'];
 
         return $response->withJson($aResult, StatusCode::HTTP_OK);
     }
@@ -43,7 +42,7 @@ class ProductControllerV2 extends ProductControllerV1
      */
     protected function setLimits(ApiInterfaceV2 $oQueryBuilder, array $aQueryParams): void
     {
-        if ($aQueryParams['start'] != '' && ctype_digit($aQueryParams['start'])) {
+        if (isset($aQueryParams['start']) && $aQueryParams['start'] != '' && ctype_digit($aQueryParams['start'])) {
             $oQueryBuilder->setLimitStart((int)$aQueryParams['start']);
         }
 
