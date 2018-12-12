@@ -13,3 +13,8 @@ Open in the browser [http://localhost/v2/products](http://localhost/v2/products?
 ```bash
 ./run_tests.sh
 ```
+
+## Graphical interface
+Use the browser firefox like this
+![browser](./gui.png)
+Or just use Postman
